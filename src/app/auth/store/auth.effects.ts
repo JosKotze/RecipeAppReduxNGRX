@@ -19,7 +19,8 @@ export interface AuthResponseData {
 @Injectable()
 export class AuthEffects {
   authLogin = createEffect(
-    () => this.actions$.pipe(ofType(AuthActions.LOGIN_START)),
+    () => this.actions$.pipe(
+    ofType(AuthActions.LOGIN_START),
     switchMap((authData: AuthActions.LoginStart) => {
       return this.http
         .post<AuthResponseData>(
@@ -50,6 +51,7 @@ export class AuthEffects {
           })
         );
     }),
+  ),
     { dispatch: false }
   );
 
