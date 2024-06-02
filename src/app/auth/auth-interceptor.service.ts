@@ -5,7 +5,7 @@ import {
   HttpHandler,
   HttpParams
 } from '@angular/common/http';
-import { take, exhaustMap } from 'rxjs/operators';
+import { take, exhaustMap, map } from 'rxjs/operators';
 
 import { AuthService } from './auth.service';
 import { Store } from '@ngrx/store';
@@ -16,8 +16,11 @@ export class AuthInterceptorService implements HttpInterceptor {
   constructor(private authService: AuthService, private store: Store<fromApp.AppState>) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
-    return this.authService.user.pipe(
+    return this.store.select('auth').pipe(
       take(1),
+      map(authState => {
+        return authState.user; // mapped into a new observable
+      }), // new observable reaches new step
       exhaustMap(user => {
         if (!user) {
           return next.handle(req);
